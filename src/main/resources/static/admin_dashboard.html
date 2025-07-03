@@ -5,9 +5,11 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>聊天系统管理后台</title>
-    <link href="css/bootstrap.min.css" rel="stylesheet" type="text/css"/>
-    <!-- 添加Font Awesome 6.7.2 CDN -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.7.2/css/all.min.css">
+    <!-- 使用CDN引入Bootstrap CSS -->
+    <link href="https://cdn.bootcdn.net/ajax/libs/twitter-bootstrap/4.5.3/css/bootstrap.min.css" rel="stylesheet" type="text/css"/>
+    <!-- 添加Font Awesome CDN -->
+    <link rel="stylesheet" href="https://cdn.bootcdn.net/ajax/libs/font-awesome/5.15.1/css/all.min.css">
+    <!-- 保留本地字体图标作为备用 -->
     <link rel="stylesheet" href="css/font-awesome.css">
     <link rel="icon" href="img/chat.ico" type="image/x-icon"/>
     <style>
@@ -171,6 +173,11 @@
         <div class="collapse navbar-collapse" id="navbarNav">
             <ul class="navbar-nav ml-auto">
                 <li class="nav-item">
+                    <a class="nav-link" href="#" id="testModalBtn">
+                        <i class="fas fa-vial"></i> 测试模态框
+                    </a>
+                </li>
+                <li class="nav-item">
                     <a class="nav-link" href="#" @click="logout">
                         <i class="fas fa-sign-out-alt"></i> 退出登录
                     </a>
@@ -178,6 +185,26 @@
             </ul>
         </div>
     </nav>
+    
+    <!-- 测试模态框 -->
+    <div class="modal fade" id="testModal" tabindex="-1" role="dialog" aria-labelledby="testModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="testModalLabel">测试模态框</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    这是一个测试模态框，用于验证Bootstrap模态框功能是否正常。
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">关闭</button>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <div class="container-fluid" id="app">
         <div class="row">
@@ -358,13 +385,13 @@
         </div>
 
         <!-- 添加/编辑管理员模态框 -->
-        <div class="modal fade" id="adminModal" tabindex="-1" role="dialog">
+        <div class="modal fade" id="adminModal" tabindex="-1" role="dialog" aria-labelledby="adminModalLabel" aria-hidden="true">
             <div class="modal-dialog" role="document">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h5 class="modal-title">{{isEditMode ? '编辑管理员' : '添加管理员'}}</h5>
-                        <button type="button" class="close" data-dismiss="modal">
-                            <span>&times;</span>
+                        <h5 class="modal-title" id="adminModalLabel">{{isEditMode ? '编辑管理员' : '添加管理员'}}</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
                         </button>
                     </div>
                     <div class="modal-body">
@@ -415,10 +442,62 @@
         </div>
     </div>
 
+    <!-- 引入完整版本的Bootstrap 4和依赖 -->
+    <script src="https://cdn.bootcdn.net/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdn.bootcdn.net/ajax/libs/popper.js/1.16.1/umd/popper.min.js"></script>
+    <script src="https://cdn.bootcdn.net/ajax/libs/twitter-bootstrap/4.5.3/js/bootstrap.min.js"></script>
+    
+    <!-- 应用脚本 -->
     <script src="js/vue.js"></script>
     <script src="js/axios-0.18.0.js"></script>
-    <script src="js/bootstrap.min.js"></script>
     <script>
+        // 页面加载完成后执行
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('DOM完全加载');
+            
+            // 添加测试模态框按钮的点击事件
+            document.getElementById('testModalBtn').addEventListener('click', function(e) {
+                e.preventDefault();
+                console.log('测试模态框按钮被点击');
+                
+                // 使用原生JavaScript显示模态框
+                var modal = document.getElementById('testModal');
+                if (modal) {
+                    modal.classList.add('show');
+                    modal.style.display = 'block';
+                    document.body.classList.add('modal-open');
+                    
+                    // 创建遮罩
+                    var backdrop = document.createElement('div');
+                    backdrop.className = 'modal-backdrop fade show';
+                    document.body.appendChild(backdrop);
+                } else {
+                    alert('未找到测试模态框元素');
+                }
+            });
+            
+            // 为所有关闭按钮添加事件处理
+            var closeButtons = document.querySelectorAll('[data-dismiss="modal"]');
+            for (var i = 0; i < closeButtons.length; i++) {
+                closeButtons[i].addEventListener('click', function() {
+                    var modal = this.closest('.modal');
+                    if (modal) {
+                        modal.classList.remove('show');
+                        modal.style.display = 'none';
+                        document.body.classList.remove('modal-open');
+                        
+                        // 移除遮罩
+                        var backdrops = document.getElementsByClassName('modal-backdrop');
+                        if (backdrops.length > 0) {
+                            while(backdrops.length > 0) {
+                                backdrops[0].parentNode.removeChild(backdrops[0]);
+                            }
+                        }
+                    }
+                });
+            }
+        });
+        
         new Vue({
             el: "#app",
             data() {
@@ -536,6 +615,7 @@
                     }
                 },
                 showAddAdminModal() {
+                    console.log('showAddAdminModal 被调用');
                     this.isEditMode = false;
                     this.currentAdmin = {
                         adminId: null,
@@ -546,23 +626,78 @@
                         phone: '',
                         status: 1
                     };
-                    $('#adminModal').modal('show');
+                    
+                    // 使用原生JavaScript显示模态框
+                    var modal = document.getElementById('adminModal');
+                    if (modal) {
+                        modal.classList.add('show');
+                        modal.style.display = 'block';
+                        document.body.classList.add('modal-open');
+                        
+                        // 创建遮罩
+                        var backdrop = document.createElement('div');
+                        backdrop.className = 'modal-backdrop fade show';
+                        document.body.appendChild(backdrop);
+                    } else {
+                        alert('未找到模态框元素');
+                    }
                 },
                 editAdmin(admin) {
                     this.isEditMode = true;
                     this.currentAdmin = { ...admin };
                     // 密码置空，避免显示已有密码
                     this.currentAdmin.password = '';
-                    $('#adminModal').modal('show');
+                    
+                    // 使用原生JavaScript显示模态框
+                    var modal = document.getElementById('adminModal');
+                    if (modal) {
+                        modal.classList.add('show');
+                        modal.style.display = 'block';
+                        document.body.classList.add('modal-open');
+                        
+                        // 创建遮罩
+                        var backdrop = document.createElement('div');
+                        backdrop.className = 'modal-backdrop fade show';
+                        document.body.appendChild(backdrop);
+                    } else {
+                        alert('未找到模态框元素');
+                    }
                 },
                 saveAdmin() {
                     if (this.isEditMode) {
                         // 更新管理员
+                        
+                        // 验证邮箱格式
+                        if (this.currentAdmin.email && !this.validateEmail(this.currentAdmin.email)) {
+                            alert('请输入有效的邮箱地址');
+                            return;
+                        }
+                        
+                        // 验证手机号格式
+                        if (this.currentAdmin.phone && !this.validatePhone(this.currentAdmin.phone)) {
+                            alert('请输入有效的手机号码');
+                            return;
+                        }
+                        
                         axios.put("admin/updateAdmin", this.currentAdmin).then(res => {
                             if (res.data.flag) {
                                 alert('更新成功');
                                 this.loadAdmins();
-                                $('#adminModal').modal('hide');
+                                // 使用原生JavaScript关闭模态框
+                                var modal = document.getElementById('adminModal');
+                                if (modal) {
+                                    modal.classList.remove('show');
+                                    modal.style.display = 'none';
+                                    document.body.classList.remove('modal-open');
+                                    
+                                    // 移除遮罩
+                                    var backdrops = document.getElementsByClassName('modal-backdrop');
+                                    if (backdrops.length > 0) {
+                                        while(backdrops.length > 0) {
+                                            backdrops[0].parentNode.removeChild(backdrops[0]);
+                                        }
+                                    }
+                                }
                             } else {
                                 alert(res.data.message || '更新失败');
                             }
@@ -572,18 +707,61 @@
                         });
                     } else {
                         // 添加管理员
-                        if (!this.currentAdmin.username || !this.currentAdmin.password) {
-                            alert('用户名和密码不能为空');
+                        // 表单验证
+                        if (!this.currentAdmin.username) {
+                            alert('用户名不能为空');
                             return;
                         }
                         
+                        if (!this.currentAdmin.password) {
+                            alert('密码不能为空');
+                            return;
+                        }
+                        
+                        // 验证邮箱格式
+                        if (this.currentAdmin.email && !this.validateEmail(this.currentAdmin.email)) {
+                            alert('请输入有效的邮箱地址');
+                            return;
+                        }
+                        
+                        // 验证手机号格式
+                        if (this.currentAdmin.phone && !this.validatePhone(this.currentAdmin.phone)) {
+                            alert('请输入有效的手机号码');
+                            return;
+                        }
+                        
+                        // 发送请求添加管理员
                         axios.post("admin/addAdmin", this.currentAdmin).then(res => {
                             if (res.data.flag) {
                                 alert('添加成功');
                                 this.loadAdmins();
-                                $('#adminModal').modal('hide');
+                                // 使用原生JavaScript关闭模态框
+                                var modal = document.getElementById('adminModal');
+                                if (modal) {
+                                    modal.classList.remove('show');
+                                    modal.style.display = 'none';
+                                    document.body.classList.remove('modal-open');
+                                    
+                                    // 移除遮罩
+                                    var backdrops = document.getElementsByClassName('modal-backdrop');
+                                    if (backdrops.length > 0) {
+                                        while(backdrops.length > 0) {
+                                            backdrops[0].parentNode.removeChild(backdrops[0]);
+                                        }
+                                    }
+                                }
+                                // 重置表单
+                                this.currentAdmin = {
+                                    adminId: null,
+                                    username: '',
+                                    password: '',
+                                    realName: '',
+                                    email: '',
+                                    phone: '',
+                                    status: 1
+                                };
                             } else {
-                                alert(res.data.message || '添加失败');
+                                alert(res.data.message || '添加失败，用户名可能已存在');
                             }
                         }).catch(err => {
                             console.error(err);
@@ -611,9 +789,13 @@
                     await axios.get("admin/getTodayMessageCount").then(res => {
                         if (res.data.flag) {
                             this.todayMessageCount = res.data.data || 0;
+                        } else {
+                            console.error("获取今日消息数量失败");
+                            this.todayMessageCount = 0;
                         }
                     }).catch(err => {
-                        console.error(err);
+                        console.error("获取今日消息数量出错:", err);
+                        this.todayMessageCount = 0;
                     });
                 },
                 
@@ -621,6 +803,18 @@
                     if (!timestamp) return '';
                     const date = new Date(timestamp);
                     return date.toLocaleString();
+                },
+                
+                // 验证邮箱格式
+                validateEmail(email) {
+                    const re = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+                    return re.test(String(email).toLowerCase());
+                },
+                
+                // 验证手机号格式
+                validatePhone(phone) {
+                    const re = /^1[3-9]\d{9}$/;
+                    return re.test(phone);
                 }
             }
         });
