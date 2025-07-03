@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <title>聊天系统管理后台</title>
+    <link rel="icon" href="img/chat.ico" type="image/x-icon"/>
+    <link rel="stylesheet" href="css/font-awesome.css"/> <!-- Font-Awesome-Icons-CSS -->
+    <link rel="stylesheet" href="css/login.css" type="text/css" media="all"/> <!-- Style-CSS -->
+</head>
+<body class="background">
+<div class="header-w3l">
+    <h1>聊天系统管理后台</h1>
+</div>
+<div class="main-content-agile" id="app">
+    <div class="sub-main-w3">
+        <h2>管理员登录</h2>
+        <form>
+            <div class="icon1">
+                <input type="text" class="form-control" id="username" v-model="username" placeholder="请输入管理员账号">
+            </div>
+            <div class="icon2">
+                <input type="password" class="form-control" id="password" v-model="password" placeholder="请输入密码">
+            </div>
+            <div class="clear"></div>
+            <input type="button" class="btn btn-primary btn-block" @click="login" value="登录">
+            <div class="icon1">
+                <span id="err_msg" style="color: red; ">{{ errorMessage }}</span>
+            </div>
+        </form>
+    </div>
+</div>
+<div class="footer">
+    <p>xxx教育科技有限公司 版权所有Copyright 2006-2019 All Rights Reserved </p>
+</div>
+
+<script src="js/vue.js"></script>
+<script src="js/axios-0.18.0.js"></script>
+<script>
+    new Vue({
+        el: "#app",
+        data() {
+            return {
+                username: "",
+                password: "",
+                errorMessage: ""
+            }
+        },
+        methods: {
+            login() {
+                if (!this.username || !this.password) {
+                    this.errorMessage = "用户名和密码不能为空";
+                    return;
+                }
+                
+                axios.post("admin/login", {
+                    username: this.username,
+                    password: this.password
+                }).then(res => {
+                    if (res.data.flag) {
+                        window.location.href = "admin_dashboard.html";
+                    } else {
+                        this.errorMessage = res.data.message || "登录失败";
+                    }
+                }).catch(err => {
+                    this.errorMessage = "系统错误，请稍后重试";
+                    console.error(err);
+                });
+            }
+        }
+    });
+</script>
+</body>
+</html> 
