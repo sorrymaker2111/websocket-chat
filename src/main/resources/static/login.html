@@ -43,6 +43,9 @@
             <div class="icon1">
                 <span id="err_msg" style="color: red; ">{{errMessage}}</span>
             </div>
+            <div class="register-link">
+                <p>还没有账号？<a href="register.html" style="color: #00BCD4;">立即注册</a></p>
+            </div>
         </form>
     </div>
 </div>
@@ -65,6 +68,17 @@
         },
         methods: {
             login() {
+                // 表单验证
+                if (!this.user.username) {
+                    this.errMessage = "请输入用户名";
+                    return;
+                }
+                if (!this.user.password) {
+                    this.errMessage = "请输入密码";
+                    return;
+                }
+                
+                // 发送登录请求
                 axios.post("user/login", this.user).then(res => {
                     //判断登陆是否成功
                     if (res.data.flag) {
@@ -72,6 +86,9 @@
                     } else {
                         this.errMessage = res.data.message;
                     }
+                }).catch(err => {
+                    this.errMessage = "登录失败，请稍后再试";
+                    console.error(err);
                 });
             }
         }
