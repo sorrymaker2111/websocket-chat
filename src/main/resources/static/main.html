@@ -23,6 +23,7 @@
     <title>聊天室</title>
     <link href="css/bootstrap.min.css" rel="stylesheet" type="text/css"/>
     <link rel="stylesheet" href="css/chat.css">
+    <link rel="stylesheet" href="css/chat-custom.css">
 </head>
 
 <body>
@@ -49,7 +50,7 @@
                         <div class="pnl-list" id="msgs" v-for="message in historyMessage">
 
                             <!-- 消息这展示区域 -->
-                            <div class="msg guest" v-if="message.toName">
+                            <div class="msg guest" v-if="message.isSelf">
                                 <div class="msg-right">
                                     <div class="msg-host headDefault"></div>
                                     <div class="msg-ball" v-html="renderMessage(message.message)"></div>
@@ -191,6 +192,12 @@
                     this.historyMessage = [];
                 } else {
                     this.historyMessage = JSON.parse(history);
+                    // 确保历史消息中的isSelf属性被正确设置
+                    this.historyMessage.forEach(msg => {
+                        if (msg.toName && !msg.hasOwnProperty('isSelf')) {
+                            msg.isSelf = true;
+                        }
+                    });
                 }
                 //展示聊天对话框
                 this.isShowChat = true;
@@ -200,7 +207,10 @@
             submit() {
                 if (!this.sendMessage.message.trim()) return;
                 this.sendMessage.toName = this.toName;
-                this.historyMessage.push(JSON.parse(JSON.stringify(this.sendMessage)));
+                // 标记这是自己发送的消息
+                let myMessage = JSON.parse(JSON.stringify(this.sendMessage));
+                myMessage.isSelf = true;
+                this.historyMessage.push(myMessage);
                 sessionStorage.setItem(this.toName, JSON.stringify(this.historyMessage));
                 ws.send(JSON.stringify(this.sendMessage));
                 this.sendMessage.message = "";
@@ -234,6 +244,8 @@
                 } else {
                     //非系统消息
                     var history = sessionStorage.getItem(res.fromName);
+                    // 确保接收的消息不会被标记为自己发送的
+                    res.isSelf = false;
                     if (!history) {
                         this.historyMessage = [res];
                     } else {
