@@ -68,4 +68,10 @@ public interface AdminService {
      * @return 聊天记录列表
      */
     List<Object> findUserChatHistory(String username);
+    
+    /**
+     * 获取今日消息数量
+     * @return 今日消息数量
+     */
+    int getTodayMessageCount();
 } 

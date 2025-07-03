@@ -52,4 +52,10 @@ public interface ChatRecordService {
      * @return 是否删除成功
      */
     boolean deleteUserChatRecords(String username);
+    
+    /**
+     * 获取今日消息数量
+     * @return 今日消息数量
+     */
+    int countTodayMessages();
 } 

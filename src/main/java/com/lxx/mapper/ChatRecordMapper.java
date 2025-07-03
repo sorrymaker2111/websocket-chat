@@ -55,4 +55,10 @@ public interface ChatRecordMapper {
      * @return 影响的行数
      */
     int deleteByUsername(String username);
+    
+    /**
+     * 获取今日消息数量
+     * @return 今日消息数量
+     */
+    int countTodayMessages();
 } 

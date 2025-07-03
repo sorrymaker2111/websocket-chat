@@ -7,6 +7,7 @@ import com.lxx.pojo.Admin;
 import com.lxx.pojo.ChatRecord;
 import com.lxx.pojo.User;
 import com.lxx.service.AdminService;
+import com.lxx.service.ChatRecordService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -24,6 +25,9 @@ public class AdminServiceImpl implements AdminService {
     
     @Autowired
     private ChatRecordMapper chatRecordMapper;
+    
+    @Autowired
+    private ChatRecordService chatRecordService;
     
     @Override
     public Admin login(String username, String password) {
@@ -88,5 +92,10 @@ public class AdminServiceImpl implements AdminService {
         // 查询与该用户相关的所有聊天记录
         List<ChatRecord> chatRecords = chatRecordMapper.findByUsername(username);
         return new ArrayList<>(chatRecords);
+    }
+    
+    @Override
+    public int getTodayMessageCount() {
+        return chatRecordService.countTodayMessages();
     }
 } 

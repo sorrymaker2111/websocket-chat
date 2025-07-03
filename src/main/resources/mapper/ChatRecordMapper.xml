@@ -51,4 +51,10 @@
         DELETE FROM chat_record
         WHERE from_name = #{username} OR to_name = #{username}
     </delete>
+    
+    <!-- 获取今日消息数量 -->
+    <select id="countTodayMessages" resultType="int">
+        SELECT COUNT(*) FROM chat_record
+        WHERE DATE(send_time) = CURDATE()
+    </select>
 </mapper> 

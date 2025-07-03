@@ -46,4 +46,9 @@ public class ChatRecordServiceImpl implements ChatRecordService {
     public boolean deleteUserChatRecords(String username) {
         return chatRecordMapper.deleteByUsername(username) > 0;
     }
+
+    @Override
+    public int countTodayMessages() {
+        return chatRecordMapper.countTodayMessages();
+    }
 } 

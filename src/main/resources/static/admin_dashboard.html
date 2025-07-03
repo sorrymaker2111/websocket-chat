@@ -232,7 +232,7 @@
                         <div class="col-md-4">
                             <div class="card stat-card">
                                 <div class="stat-label"><i class="fas fa-comment-dots fa-2x"></i></div>
-                                <div class="stat-number">0</div>
+                                <div class="stat-number">{{todayMessageCount}}</div>
                                 <div class="stat-label">今日消息数</div>
                             </div>
                         </div>
@@ -344,6 +344,7 @@
                                 <div class="chat-sender">
                                     <span v-if="chat.fromName"><i class="fas fa-user"></i> 来自: {{chat.fromName}}</span>
                                     <span v-else><i class="fas fa-paper-plane"></i> 发送至: {{chat.toName}}</span>
+                                    <span class="float-right text-muted"><i class="fas fa-clock"></i> {{formatTime(chat.sendTime)}}</span>
                                 </div>
                                 <div class="chat-content">{{chat.message}}</div>
                             </div>
@@ -428,6 +429,7 @@
                     admins: [],
                     userCount: 0,
                     adminCount: 0,
+                    todayMessageCount: 0,
                     chatUsername: '',
                     chatHistory: [],
                     isEditMode: false,
@@ -474,6 +476,7 @@
                 async loadDashboardData() {
                     await this.loadUsers();
                     await this.loadAdmins();
+                    await this.loadTodayMessageCount();
                     this.userCount = this.users.length;
                     this.adminCount = this.admins.length;
                 },
@@ -602,6 +605,22 @@
                             alert('系统错误，请稍后重试');
                         });
                     }
+                },
+                
+                async loadTodayMessageCount() {
+                    await axios.get("admin/getTodayMessageCount").then(res => {
+                        if (res.data.flag) {
+                            this.todayMessageCount = res.data.data || 0;
+                        }
+                    }).catch(err => {
+                        console.error(err);
+                    });
+                },
+                
+                formatTime(timestamp) {
+                    if (!timestamp) return '';
+                    const date = new Date(timestamp);
+                    return date.toLocaleString();
                 }
             }
         });

@@ -188,4 +188,18 @@ public class AdminController {
         result.setData(chatHistory);
         return result;
     }
+    
+    /**
+     * 获取今日消息数量
+     *
+     * @return
+     */
+    @GetMapping("/getTodayMessageCount")
+    public Result getTodayMessageCount() {
+        Result result = new Result();
+        int count = adminService.getTodayMessageCount();
+        result.setFlag(true);
+        result.setData(count);
+        return result;
+    }
 } 
