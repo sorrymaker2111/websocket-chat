@@ -3,6 +3,8 @@ package com.lxx.mapper;
 import com.lxx.pojo.User;
 import org.apache.ibatis.annotations.*;
 
+import java.util.List;
+
 @Mapper
 public interface UserMapper {
     
@@ -29,4 +31,19 @@ public interface UserMapper {
      */
     @Select("select user_id, username, password from user where user_id = #{userId}")
     User findByUserId(Integer userId);
+    
+    /**
+     * 查询所有用户
+     * @return 用户列表
+     */
+    @Select("select user_id, username, password from user order by user_id desc")
+    List<User> findAll();
+    
+    /**
+     * 删除用户
+     * @param userId 用户ID
+     * @return 影响行数
+     */
+    @Delete("delete from user where user_id = #{userId}")
+    int delete(Integer userId);
 } 
