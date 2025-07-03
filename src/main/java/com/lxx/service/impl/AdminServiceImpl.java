@@ -1,8 +1,10 @@
 package com.lxx.service.impl;
 
 import com.lxx.mapper.AdminMapper;
+import com.lxx.mapper.ChatRecordMapper;
 import com.lxx.mapper.UserMapper;
 import com.lxx.pojo.Admin;
+import com.lxx.pojo.ChatRecord;
 import com.lxx.pojo.User;
 import com.lxx.service.AdminService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,6 +21,9 @@ public class AdminServiceImpl implements AdminService {
     
     @Autowired
     private UserMapper userMapper;
+    
+    @Autowired
+    private ChatRecordMapper chatRecordMapper;
     
     @Override
     public Admin login(String username, String password) {
@@ -80,8 +85,8 @@ public class AdminServiceImpl implements AdminService {
     
     @Override
     public List<Object> findUserChatHistory(String username) {
-        // 这里需要实现查询聊天记录的方法
-        // 暂时返回空列表
-        return new ArrayList<>();
+        // 查询与该用户相关的所有聊天记录
+        List<ChatRecord> chatRecords = chatRecordMapper.findByUsername(username);
+        return new ArrayList<>(chatRecords);
     }
 } 
