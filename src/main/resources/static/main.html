@@ -52,14 +52,14 @@
                             <div class="msg guest" v-if="message.toName">
                                 <div class="msg-right">
                                     <div class="msg-host headDefault"></div>
-                                    <div class="msg-ball">{{message.message}}</div>
+                                    <div class="msg-ball" v-html="renderMessage(message.message)"></div>
                                 </div>
                             </div>
                             <div class="msg robot" v-else>
                                 <div class="msg-left" worker="">
                                     <div class="msg-host photo"
                                          style="background-image: url(img/avatar/Member002.jpg)"></div>
-                                    <div class="msg-ball">{{message.message}}</div>
+                                    <div class="msg-ball" v-html="renderMessage(message.message)"></div>
                                 </div>
                             </div>
                         </div>
@@ -67,20 +67,32 @@
 
                     <div class="abs bottom pnl-text">
                         <div class="abs cover pnl-input">
+                            <!-- 表情面板 -->
+                            <div class="emoji-panel" v-show="showEmojiPanel">
+                                <div style="font-size:14px;margin-bottom:8px;color:#666;border-bottom:1px solid #eee;padding-bottom:5px;">选择表情</div>
+                                <div style="display:flex;flex-wrap:wrap;justify-content:flex-start;">
+                                    <div class="emoji-item" v-for="n in 24" :key="n" @click="insertEmoji(n)">
+                                        <img :src="'img/emoji/emoji_' + (n < 10 ? '0' + n : n) + '.png'" width="100%" height="100%" :alt="'表情'+n">
+                                    </div>
+                                </div>
+                            </div>
+                            
                             <textarea class="scroll" id="context_text" @keyup.enter="submit" wrap="hard"
-                                      placeholder="在此输入文字信息..."
+                                      placeholder="在此输入文字信息..." style="padding-left: 45px;"
                                       v-model="sendMessage.message"></textarea>
                             <div class="abs atcom-pnl scroll hide" id="atcomPnl">
                                 <ul class="atcom" id="atcom"></ul>
                             </div>
                         </div>
 
+                        <!-- 表情按钮 -->
+                        <div class="emoji-toggle" @click="toggleEmojiPanel" :class="{'active': showEmojiPanel}"></div>
+
                         <div class="abs br pnl-btn" id="submit" @click="submit"
                              style="background-color: rgb(32, 196, 202); color: rgb(255, 255, 255);">
                             发送
                         </div>
-                        <div class="pnl-support" id="copyright"><a href="http://www.swjtu.edu.cn">简单聊天系统</a>
-                        </div>
+
                     </div>
                 </div>
 
@@ -148,7 +160,8 @@
                 systemMessages: [
                     /*"张三",
                     "李四"*/
-                ]
+                ],
+                showEmojiPanel: false
             }
         },
         created() {
@@ -181,15 +194,18 @@
                 }
                 //展示聊天对话框
                 this.isShowChat = true;
-                //显示“正在和谁聊天”
+                //显示"正在和谁聊天"
                 this.chatMes = true;
             },
             submit() {
+                if (!this.sendMessage.message.trim()) return;
                 this.sendMessage.toName = this.toName;
                 this.historyMessage.push(JSON.parse(JSON.stringify(this.sendMessage)));
                 sessionStorage.setItem(this.toName, JSON.stringify(this.historyMessage));
                 ws.send(JSON.stringify(this.sendMessage));
                 this.sendMessage.message = "";
+                // 关闭表情面板
+                this.showEmojiPanel = false;
             },
             onOpen() {
                 this.isOnline = true;
@@ -225,6 +241,25 @@
                     }
                     sessionStorage.setItem(res.fromName, JSON.stringify(this.historyMessage));
                 }
+            },
+            // 切换表情面板
+            toggleEmojiPanel() {
+                this.showEmojiPanel = !this.showEmojiPanel;
+            },
+            // 插入表情
+            insertEmoji(num) {
+                const emojiNum = num < 10 ? `0${num}` : num;
+                // 在光标位置或末尾插入表情图片标记
+                this.sendMessage.message += `[emoji:${emojiNum}]`;
+                // 关闭表情面板
+                this.showEmojiPanel = false;
+            },
+            renderMessage(message) {
+                if (!message) return '';
+                // 替换表情标记为实际的图片
+                return message.replace(/\[emoji:(\d{2})\]/g, (match, p1) => {
+                    return `<img src="img/emoji/emoji_${p1}.png" style="width:24px;height:24px;vertical-align:middle;" alt="表情" />`;
+                });
             }
         }
     });

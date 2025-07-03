@@ -5011,3 +5011,59 @@ body[lang='tw'] #humanBtn::after {
     border-radius: 5px;
     background-image: url(../img/avatar/Member002.jpg);
 }
+
+.emoji-panel {
+    position: absolute;
+    bottom: 100%;
+    left: 0;
+    width: 350px;
+    background-color: white;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    padding: 10px;
+    z-index: 1000;
+    margin-bottom: 5px;
+}
+
+.emoji-item {
+    width: 30px;
+    height: 30px;
+    padding: 5px;
+    cursor: pointer;
+    transition: all 0.2s;
+    border-radius: 5px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.emoji-item:hover {
+    background-color: #f0f0f0;
+    transform: scale(1.1);
+}
+
+.emoji-toggle {
+    width: 28px;
+    height: 28px;
+    cursor: pointer;
+    background-image: url(../img/emoji.jpg);
+    background-size: contain;
+    background-repeat: no-repeat;
+    position: absolute;
+    bottom: 10px;
+    left: 10px;
+    border-radius: 4px;
+    transition: all 0.2s;
+}
+
+.emoji-toggle:hover {
+    opacity: 0.8;
+    transform: scale(1.1);
+}
+
+.emoji-toggle.active {
+    background-color: #e6e6e6;
+    box-shadow: inset 0 1px 2px rgba(0,0,0,0.1);
+    opacity: 0.9;
+}
