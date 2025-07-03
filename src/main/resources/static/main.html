@@ -24,6 +24,14 @@
     <link href="css/bootstrap.min.css" rel="stylesheet" type="text/css"/>
     <link rel="stylesheet" href="css/chat.css">
     <link rel="stylesheet" href="css/chat-custom.css">
+    <style>
+        .message-time {
+            text-align: center;
+            color: #999;
+            font-size: 12px;
+            margin: 8px 0;
+        }
+    </style>
 </head>
 
 <body>
@@ -47,20 +55,27 @@
                 <div class="abs cover pnl-left" id="chatArea" v-show="isShowChat">
                     <div class="abs cover pnl-msgs scroll" id="show">
                         <div class="pnl-list" id="hists"><!-- 历史消息 --></div>
-                        <div class="pnl-list" id="msgs" v-for="message in historyMessage">
-
-                            <!-- 消息这展示区域 -->
-                            <div class="msg guest" v-if="message.isSelf">
-                                <div class="msg-right">
-                                    <div class="msg-host headDefault"></div>
-                                    <div class="msg-ball" v-html="renderMessage(message.message)"></div>
+                        <div class="pnl-list" id="msgs">
+                            <!-- 消息时间显示 -->
+                            <div v-for="(message, index) in historyMessage" :key="index">
+                                <!-- 显示时间，只有当前消息与上一条消息的时间不同时才显示 -->
+                                <div class="message-time" v-if="shouldShowTime(message, index)">
+                                    {{formatTime(message.time)}}
                                 </div>
-                            </div>
-                            <div class="msg robot" v-else>
-                                <div class="msg-left" worker="">
-                                    <div class="msg-host photo"
-                                         style="background-image: url(img/avatar/Member002.jpg)"></div>
-                                    <div class="msg-ball" v-html="renderMessage(message.message)"></div>
+                                
+                                <!-- 消息这展示区域 -->
+                                <div class="msg guest" v-if="message.isSelf">
+                                    <div class="msg-right">
+                                        <div class="msg-host headDefault"></div>
+                                        <div class="msg-ball" v-html="renderMessage(message.message)"></div>
+                                    </div>
+                                </div>
+                                <div class="msg robot" v-else>
+                                    <div class="msg-left" worker="">
+                                        <div class="msg-host photo"
+                                             style="background-image: url(img/avatar/Member002.jpg)"></div>
+                                        <div class="msg-ball" v-html="renderMessage(message.message)"></div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -197,6 +212,10 @@
                         if (msg.toName && !msg.hasOwnProperty('isSelf')) {
                             msg.isSelf = true;
                         }
+                        // 确保每条消息都有时间戳
+                        if (!msg.time) {
+                            msg.time = new Date().getTime();
+                        }
                     });
                 }
                 //展示聊天对话框
@@ -207,9 +226,10 @@
             submit() {
                 if (!this.sendMessage.message.trim()) return;
                 this.sendMessage.toName = this.toName;
-                // 标记这是自己发送的消息
+                // 标记这是自己发送的消息并添加时间戳
                 let myMessage = JSON.parse(JSON.stringify(this.sendMessage));
                 myMessage.isSelf = true;
+                myMessage.time = new Date().getTime();
                 this.historyMessage.push(myMessage);
                 sessionStorage.setItem(this.toName, JSON.stringify(this.historyMessage));
                 ws.send(JSON.stringify(this.sendMessage));
@@ -244,8 +264,9 @@
                 } else {
                     //非系统消息
                     var history = sessionStorage.getItem(res.fromName);
-                    // 确保接收的消息不会被标记为自己发送的
+                    // 确保接收的消息不会被标记为自己发送的，并添加时间戳
                     res.isSelf = false;
+                    res.time = new Date().getTime();
                     if (!history) {
                         this.historyMessage = [res];
                     } else {
@@ -272,6 +293,28 @@
                 return message.replace(/\[emoji:(\d{2})\]/g, (match, p1) => {
                     return `<img src="img/emoji/emoji_${p1}.png" style="width:24px;height:24px;vertical-align:middle;" alt="表情" />`;
                 });
+            },
+            // 格式化时间为 HH:MM 格式
+            formatTime(timestamp) {
+                if (!timestamp) return '';
+                const date = new Date(timestamp);
+                const hours = date.getHours().toString().padStart(2, '0');
+                const minutes = date.getMinutes().toString().padStart(2, '0');
+                return `${hours}:${minutes}`;
+            },
+            // 判断是否应该显示时间
+            shouldShowTime(message, index) {
+                if (index === 0) return true; // 第一条消息总是显示时间
+                
+                const prevMessage = this.historyMessage[index - 1];
+                if (!prevMessage || !message.time || !prevMessage.time) return true;
+                
+                // 比较当前消息和前一条消息的时间（精确到分钟）
+                const currentDate = new Date(message.time);
+                const prevDate = new Date(prevMessage.time);
+                
+                return currentDate.getHours() !== prevDate.getHours() || 
+                       currentDate.getMinutes() !== prevDate.getMinutes();
             }
         }
     });
