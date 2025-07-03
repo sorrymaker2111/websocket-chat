@@ -31,6 +31,26 @@
             font-size: 12px;
             margin: 8px 0;
         }
+        
+        .unread-badge {
+            display: inline-block;
+            background-color: #f00;
+            color: #fff;
+            border-radius: 50%;
+            min-width: 18px;
+            height: 18px;
+            line-height: 18px;
+            text-align: center;
+            font-size: 12px;
+            padding: 0 4px;
+            position: absolute;
+            top: -5px;
+            right: -5px;
+        }
+        
+        .rel-item {
+            position: relative;
+        }
     </style>
 </head>
 
@@ -121,7 +141,9 @@
                         </div>
                         <div class="pnl-hot">
                             <ul class="rel-list unselect">
-                                <li class="rel-item" v-for="friend in friendsList"><a @click='showChat(friend)'>{{friend}}</a>
+                                <li class="rel-item" v-for="friend in friendsList"><a @click='showChat(friend)'>{{friend}}
+                                    <span class="unread-badge" v-if="unreadCounts[friend] && unreadCounts[friend] > 0">{{unreadCounts[friend]}}</span>
+                                </a>
                                 </li>
                             </ul>
                         </div>
@@ -177,7 +199,8 @@
                     /*"张三",
                     "李四"*/
                 ],
-                showEmojiPanel: false
+                showEmojiPanel: false,
+                unreadCounts: {} // 存储每个好友的未读消息数量
             }
         },
         created() {
@@ -222,6 +245,9 @@
                 this.isShowChat = true;
                 //显示"正在和谁聊天"
                 this.chatMes = true;
+                
+                // 清除未读消息计数
+                this.$set(this.unreadCounts, name, 0);
             },
             submit() {
                 if (!this.sendMessage.message.trim()) return;
@@ -259,6 +285,10 @@
                         if (names[i] != this.username) {
                             this.friendsList.push(names[i]);
                             this.systemMessages.push(names[i]);
+                            // 初始化未读消息数
+                            if (!this.unreadCounts[names[i]]) {
+                                this.$set(this.unreadCounts, names[i], 0);
+                            }
                         }
                     }
                 } else {
@@ -267,12 +297,26 @@
                     // 确保接收的消息不会被标记为自己发送的，并添加时间戳
                     res.isSelf = false;
                     res.time = new Date().getTime();
-                    if (!history) {
-                        this.historyMessage = [res];
-                    } else {
+                    
+                    // 如果消息不是当前正在聊天的好友发送的，增加未读消息计数
+                    if (res.fromName !== this.toName || !this.isShowChat) {
+                        // 使用Vue的响应式更新方法
+                        const currentCount = this.unreadCounts[res.fromName] || 0;
+                        this.$set(this.unreadCounts, res.fromName, currentCount + 1);
+                    }
+                    
+                    // 保存消息到会话存储
+                    let messageHistory = [];
+                    if (history) {
+                        messageHistory = JSON.parse(history);
+                    }
+                    messageHistory.push(res);
+                    sessionStorage.setItem(res.fromName, JSON.stringify(messageHistory));
+                    
+                    // 只有当前正在与发送消息的用户聊天时，才更新显示的消息列表
+                    if (res.fromName === this.toName && this.isShowChat) {
                         this.historyMessage.push(res);
                     }
-                    sessionStorage.setItem(res.fromName, JSON.stringify(this.historyMessage));
                 }
             },
             // 切换表情面板
