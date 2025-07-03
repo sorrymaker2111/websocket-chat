@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.lxx.mapper.ChatRecordMapper">
+    
+    <!-- 定义聊天记录的结果映射 -->
+    <resultMap id="chatRecordMap" type="com.lxx.pojo.ChatRecord">
+        <id property="id" column="id"/>
+        <result property="fromName" column="from_name"/>
+        <result property="toName" column="to_name"/>
+        <result property="message" column="message"/>
+        <result property="sendTime" column="send_time"/>
+        <result property="messageType" column="message_type"/>
+        <result property="isRead" column="is_read"/>
+    </resultMap>
+    
+    <!-- 保存聊天记录 -->
+    <insert id="save" parameterType="com.lxx.pojo.ChatRecord" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO chat_record (from_name, to_name, message, send_time, message_type, is_read)
+        VALUES (#{fromName}, #{toName}, #{message}, #{sendTime}, #{messageType}, #{isRead})
+    </insert>
+    
+    <!-- 查询用户的聊天记录 -->
+    <select id="findByUsername" resultMap="chatRecordMap">
+        SELECT * FROM chat_record
+        WHERE from_name = #{username} OR to_name = #{username}
+        ORDER BY send_time DESC
+    </select>
+    
+    <!-- 查询两个用户之间的聊天记录 -->
+    <select id="findByFromAndTo" resultMap="chatRecordMap">
+        SELECT * FROM chat_record
+        WHERE (from_name = #{fromName} AND to_name = #{toName})
+           OR (from_name = #{toName} AND to_name = #{fromName})
+        ORDER BY send_time ASC
+    </select>
+    
+    <!-- 将消息标记为已读 -->
+    <update id="markAsRead">
+        UPDATE chat_record
+        SET is_read = 1
+        WHERE from_name = #{fromName} AND to_name = #{toName} AND is_read = 0
+    </update>
+    
+    <!-- 删除聊天记录 -->
+    <delete id="delete">
+        DELETE FROM chat_record WHERE id = #{id}
+    </delete>
+    
+    <!-- 删除用户的所有聊天记录 -->
+    <delete id="deleteByUsername">
+        DELETE FROM chat_record
+        WHERE from_name = #{username} OR to_name = #{username}
+    </delete>
+</mapper> 

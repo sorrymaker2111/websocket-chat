@@ -1,0 +1,40 @@
+/* 自定义聊天界面样式 */
+
+/* 右侧消息（发送者）- 白字蓝底 */
+.msg-right > .msg-ball {
+    background-color: #0088ff;  /* QQ蓝色背景 */
+    color: #ffffff;  /* 白色文字 */
+}
+
+/* 右侧消息的小三角形 */
+.msg-right > .msg-ball:before {
+    border-color: transparent transparent transparent #0088ff;  /* 与背景颜色一致 */
+}
+
+/* 左侧消息（接收者）- 黑字白底 */
+.msg-left > .msg-ball {
+    background-color: #ffffff;  /* 白色背景 */
+    color: #000000;  /* 黑色文字 */
+}
+
+/* 左侧消息的小三角形 */
+.msg-left > .msg-ball:before {
+    border-color: transparent #ffffff transparent transparent;  /* 与背景颜色一致 */
+}
+
+/* 链接颜色调整 */
+.msg-right > .msg-ball a, 
+.msg-right > .msg-ball .msg-link, 
+.msg-right > .msg-ball .msg-anchor {
+    color: #e0f0ff;  /* 浅色链接，适合深色背景 */
+}
+
+/* 消息气泡圆角优化 */
+.msg-ball {
+    border-radius: 8px;  /* 更圆润的边角 */
+}
+
+/* 消息间距优化 */
+.msg {
+    margin-bottom: 10px;  /* 增加消息之间的间距 */
+}
