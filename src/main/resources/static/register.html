@@ -1,90 +1,111 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>用户注册</title>
-    <link href="css/bootstrap.min.css" rel="stylesheet" type="text/css"/>
-    <link rel="stylesheet" href="css/login.css">
-</head>
-<body>
-    <div class="login-container">
-        <div class="login-box">
-            <h2 class="text-center mb-4">用户注册</h2>
-            <div id="app">
-                <div class="form-group">
-                    <label for="username">用户名</label>
-                    <input type="text" class="form-control" id="username" v-model="user.username" placeholder="请输入用户名">
-                </div>
-                <div class="form-group">
-                    <label for="password">密码</label>
-                    <input type="password" class="form-control" id="password" v-model="user.password" placeholder="请输入密码">
-                </div>
-                <div class="form-group">
-                    <label for="confirmPassword">确认密码</label>
-                    <input type="password" class="form-control" id="confirmPassword" v-model="confirmPassword" placeholder="请再次输入密码">
-                </div>
-                <div class="form-group" v-if="errorMessage">
-                    <div class="alert alert-danger">{{errorMessage}}</div>
-                </div>
-                <button class="btn btn-primary btn-block" @click="register">注册</button>
-                <p class="text-center mt-3">
-                    已有账号？<a href="login.html">立即登录</a>
-                </p>
-            </div>
-        </div>
-    </div>
+    <title>注册</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <meta name="keywords"
+          content="Transparent Sign In Form Responsive Widget,Login form widgets, Sign up Web forms , Login signup Responsive web form,Flat Pricing table,Flat Drop downs,Registration Forms,News letter Forms,Elements"/>
+    <script type="application/x-javascript">
+        addEventListener("load", function () {
+            setTimeout(hideURLbar, 0);
+        }, false);
 
-    <script src="js/vue.js"></script>
-    <script src="js/axios-0.18.0.js"></script>
-    <script>
-        new Vue({
-            el: "#app",
-            data() {
-                return {
-                    user: {
-                        username: "",
-                        password: ""
-                    },
-                    confirmPassword: "",
-                    errorMessage: ""
-                }
-            },
-            methods: {
-                register() {
-                    // 验证表单
-                    if (!this.user.username) {
-                        this.errorMessage = "用户名不能为空";
-                        return;
-                    }
-                    if (!this.user.password) {
-                        this.errorMessage = "密码不能为空";
-                        return;
-                    }
-                    if (this.user.password !== this.confirmPassword) {
-                        this.errorMessage = "两次密码输入不一致";
-                        return;
-                    }
-
-                    // 发送注册请求
-                    axios.post("/user/register", this.user)
-                        .then(res => {
-                            if (res.data.flag) {
-                                // 注册成功，跳转到登录页
-                                alert("注册成功，请登录");
-                                window.location.href = "login.html";
-                            } else {
-                                // 注册失败，显示错误信息
-                                this.errorMessage = res.data.message;
-                            }
-                        })
-                        .catch(err => {
-                            this.errorMessage = "注册失败，请稍后再试";
-                            console.error(err);
-                        });
-                }
-            }
-        });
+        function hideURLbar() {
+            window.scrollTo(0, 1);
+        }
     </script>
+
+    <link rel="icon" href="img/chat.ico" type="image/x-icon"/>
+    <link rel="stylesheet" href="css/font-awesome.css"/> <!-- Font-Awesome-Icons-CSS -->
+    <link rel="stylesheet" href="css/login.css" type="text/css" media="all"/> <!-- Style-CSS -->
+</head>
+
+<body class="background">
+<div class="header-w3l">
+    <h1>畅聊</h1>
+</div>
+<div class="main-content-agile" id="app">
+    <div class="sub-main-w3">
+        <h2>注册</h2>
+        <form id="registerForm">
+            <div class="icon1">
+                <input placeholder="用户名" id="username" v-model="user.username" type="text"/>
+            </div>
+
+            <div class="icon2">
+                <input placeholder="密码" id="password" v-model="user.password" type="password"/>
+            </div>
+
+            <div class="icon2">
+                <input placeholder="确认密码" id="confirmPassword" v-model="confirmPassword" type="password"/>
+            </div>
+
+            <div class="clear"></div>
+            <input type="button" id="btn1" @click="register" value="注册"/>
+            <div class="icon1">
+                <span id="err_msg" style="color: red; ">{{errorMessage}}</span>
+            </div>
+            <div class="register-link">
+                <p>已有账号？<a href="login.html" style="color: #00BCD4;">立即登录</a></p>
+            </div>
+        </form>
+    </div>
+</div>
+<div class="footer">
+    <p>xxx教育科技有限公司 版权所有Copyright 2006-2019 All Rights Reserved </p>
+</div>
+
+<script src="js/vue.js"></script>
+<script src="js/axios-0.18.0.js"></script>
+<script>
+    new Vue({
+        el: "#app",
+        data() {
+            return {
+                user: {
+                    username: "",
+                    password: ""
+                },
+                confirmPassword: "",
+                errorMessage: ""
+            }
+        },
+        methods: {
+            register() {
+                // 验证表单
+                if (!this.user.username) {
+                    this.errorMessage = "用户名不能为空";
+                    return;
+                }
+                if (!this.user.password) {
+                    this.errorMessage = "密码不能为空";
+                    return;
+                }
+                if (this.user.password !== this.confirmPassword) {
+                    this.errorMessage = "两次密码输入不一致";
+                    return;
+                }
+
+                // 发送注册请求
+                axios.post("/user/register", this.user)
+                    .then(res => {
+                        if (res.data.flag) {
+                            // 注册成功，跳转到登录页
+                            alert("注册成功，请登录");
+                            window.location.href = "login.html";
+                        } else {
+                            // 注册失败，显示错误信息
+                            this.errorMessage = res.data.message;
+                        }
+                    })
+                    .catch(err => {
+                        this.errorMessage = "注册失败，请稍后再试";
+                        console.error(err);
+                    });
+            }
+        }
+    });
+</script>
 </body>
 </html> 
